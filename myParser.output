@@ -1,0 +1,1444 @@
+   0  $accept : %entry% $end
+
+   1  toplevel : expr SEMISEMI
+   2           | declare SEMISEMI
+   3           | SHARP var args0 SEMISEMI
+
+   4  declare : LET let_declare
+   5          | LET REC let_rec_declare
+   6          | LET let_declare declare
+   7          | LET REC let_rec_declare declare
+
+   8  let_declare : var args0 EQ expr
+   9              | var args0 EQ expr AND let_declare
+
+  10  let_rec_declare : var var args0 EQ expr
+  11                  | var var args0 EQ expr AND let_rec_declare
+
+  12  expr : LET let_declare IN expr
+  13       | LET REC let_rec_declare IN expr
+  14       | IF expr THEN expr ELSE expr
+  15       | FUN args1 ARROW expr
+  16       | arith_expr EQ arith_expr
+  17       | arith_expr LT arith_expr
+  18       | MATCH expr WITH cases
+  19       | MATCH expr WITH BAR cases
+  20       | list_expr
+
+  21  cases : pattern ARROW expr
+  22        | pattern ARROW expr BAR cases
+
+  23  pattern : atomic_pattern CONS pattern
+  24          | atomic_pattern
+
+  25  atomic_pattern : INT
+  26                 | BOOL
+  27                 | var
+  28                 | LPAR pattern COMMA pattern RPAR
+  29                 | LBRACKET RBRACKET
+  30                 | LPAR pattern RPAR
+
+  31  list_expr : arith_expr CONS list_expr
+  32            | arith_expr
+
+  33  arith_expr : arith_expr PLUS factor_expr
+  34             | arith_expr MINUS factor_expr
+  35             | factor_expr
+
+  36  factor_expr : factor_expr TIMES app_expr
+  37              | factor_expr DIV app_expr
+  38              | app_expr
+
+  39  app_expr : app_expr atomic_expr
+  40           | atomic_expr
+
+  41  atomic_expr : INT
+  42              | BOOL
+  43              | LPAR expr COMMA expr RPAR
+  44              | LBRACKET RBRACKET
+  45              | ID
+  46              | LPAR expr RPAR
+
+  47  var : ID
+
+  48  args0 :
+  49        | args1
+
+  50  args1 : var args0
+
+  51  %entry% : '\001' toplevel
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . toplevel  (51)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 6
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	SHARP  shift 12
+	.  error
+
+	toplevel  goto 13
+	expr  goto 14
+	declare  goto 15
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	atomic_expr : INT .  (41)
+
+	.  reduce 41
+
+
+state 4
+	atomic_expr : BOOL .  (42)
+
+	.  reduce 42
+
+
+state 5
+	atomic_expr : ID .  (45)
+
+	.  reduce 45
+
+
+state 6
+	declare : LET . let_declare  (4)
+	declare : LET . REC let_rec_declare  (5)
+	declare : LET . let_declare declare  (6)
+	declare : LET . REC let_rec_declare declare  (7)
+	expr : LET . let_declare IN expr  (12)
+	expr : LET . REC let_rec_declare IN expr  (13)
+
+	ID  shift 21
+	REC  shift 22
+	.  error
+
+	var  goto 23
+	let_declare  goto 24
+
+
+state 7
+	expr : IF . expr THEN expr ELSE expr  (14)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 26
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 8
+	atomic_expr : LPAR . expr COMMA expr RPAR  (43)
+	atomic_expr : LPAR . expr RPAR  (46)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 27
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 9
+	expr : FUN . args1 ARROW expr  (15)
+
+	ID  shift 21
+	.  error
+
+	var  goto 28
+	args1  goto 29
+
+
+state 10
+	atomic_expr : LBRACKET . RBRACKET  (44)
+
+	RBRACKET  shift 30
+	.  error
+
+
+state 11
+	expr : MATCH . expr WITH cases  (18)
+	expr : MATCH . expr WITH BAR cases  (19)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 31
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 12
+	toplevel : SHARP . var args0 SEMISEMI  (3)
+
+	ID  shift 21
+	.  error
+
+	var  goto 32
+
+
+state 13
+	%entry% : '\001' toplevel .  (51)
+
+	.  reduce 51
+
+
+state 14
+	toplevel : expr . SEMISEMI  (1)
+
+	SEMISEMI  shift 33
+	.  error
+
+
+state 15
+	toplevel : declare . SEMISEMI  (2)
+
+	SEMISEMI  shift 34
+	.  error
+
+
+state 16
+	expr : arith_expr . EQ arith_expr  (16)
+	expr : arith_expr . LT arith_expr  (17)
+	list_expr : arith_expr . CONS list_expr  (31)
+	list_expr : arith_expr .  (32)
+	arith_expr : arith_expr . PLUS factor_expr  (33)
+	arith_expr : arith_expr . MINUS factor_expr  (34)
+
+	PLUS  shift 35
+	MINUS  shift 36
+	EQ  shift 37
+	LT  shift 38
+	CONS  shift 39
+	LET  reduce 32
+	IN  reduce 32
+	AND  reduce 32
+	THEN  reduce 32
+	ELSE  reduce 32
+	RPAR  reduce 32
+	COMMA  reduce 32
+	WITH  reduce 32
+	BAR  reduce 32
+	SEMISEMI  reduce 32
+
+
+state 17
+	expr : list_expr .  (20)
+
+	.  reduce 20
+
+
+state 18
+	arith_expr : factor_expr .  (35)
+	factor_expr : factor_expr . TIMES app_expr  (36)
+	factor_expr : factor_expr . DIV app_expr  (37)
+
+	TIMES  shift 40
+	DIV  shift 41
+	LET  reduce 35
+	IN  reduce 35
+	AND  reduce 35
+	PLUS  reduce 35
+	MINUS  reduce 35
+	EQ  reduce 35
+	LT  reduce 35
+	THEN  reduce 35
+	ELSE  reduce 35
+	RPAR  reduce 35
+	CONS  reduce 35
+	COMMA  reduce 35
+	WITH  reduce 35
+	BAR  reduce 35
+	SEMISEMI  reduce 35
+
+
+state 19
+	factor_expr : app_expr .  (38)
+	app_expr : app_expr . atomic_expr  (39)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LPAR  shift 8
+	LBRACKET  shift 10
+	LET  reduce 38
+	IN  reduce 38
+	AND  reduce 38
+	PLUS  reduce 38
+	TIMES  reduce 38
+	MINUS  reduce 38
+	DIV  reduce 38
+	EQ  reduce 38
+	LT  reduce 38
+	THEN  reduce 38
+	ELSE  reduce 38
+	RPAR  reduce 38
+	CONS  reduce 38
+	COMMA  reduce 38
+	WITH  reduce 38
+	BAR  reduce 38
+	SEMISEMI  reduce 38
+
+	atomic_expr  goto 42
+
+
+state 20
+	app_expr : atomic_expr .  (40)
+
+	.  reduce 40
+
+
+state 21
+	var : ID .  (47)
+
+	.  reduce 47
+
+
+state 22
+	declare : LET REC . let_rec_declare  (5)
+	declare : LET REC . let_rec_declare declare  (7)
+	expr : LET REC . let_rec_declare IN expr  (13)
+
+	ID  shift 21
+	.  error
+
+	var  goto 43
+	let_rec_declare  goto 44
+
+
+state 23
+	let_declare : var . args0 EQ expr  (8)
+	let_declare : var . args0 EQ expr AND let_declare  (9)
+	args0 : .  (48)
+
+	ID  shift 21
+	EQ  reduce 48
+
+	var  goto 28
+	args0  goto 45
+	args1  goto 46
+
+
+state 24
+	declare : LET let_declare .  (4)
+	declare : LET let_declare . declare  (6)
+	expr : LET let_declare . IN expr  (12)
+
+	LET  shift 47
+	IN  shift 48
+	SEMISEMI  reduce 4
+
+	declare  goto 49
+
+
+state 25
+	expr : LET . let_declare IN expr  (12)
+	expr : LET . REC let_rec_declare IN expr  (13)
+
+	ID  shift 21
+	REC  shift 50
+	.  error
+
+	var  goto 23
+	let_declare  goto 51
+
+
+state 26
+	expr : IF expr . THEN expr ELSE expr  (14)
+
+	THEN  shift 52
+	.  error
+
+
+state 27
+	atomic_expr : LPAR expr . COMMA expr RPAR  (43)
+	atomic_expr : LPAR expr . RPAR  (46)
+
+	RPAR  shift 53
+	COMMA  shift 54
+	.  error
+
+
+state 28
+	args1 : var . args0  (50)
+	args0 : .  (48)
+
+	ID  shift 21
+	EQ  reduce 48
+	ARROW  reduce 48
+	SEMISEMI  reduce 48
+
+	var  goto 28
+	args0  goto 55
+	args1  goto 46
+
+
+state 29
+	expr : FUN args1 . ARROW expr  (15)
+
+	ARROW  shift 56
+	.  error
+
+
+state 30
+	atomic_expr : LBRACKET RBRACKET .  (44)
+
+	.  reduce 44
+
+
+state 31
+	expr : MATCH expr . WITH cases  (18)
+	expr : MATCH expr . WITH BAR cases  (19)
+
+	WITH  shift 57
+	.  error
+
+
+state 32
+	toplevel : SHARP var . args0 SEMISEMI  (3)
+	args0 : .  (48)
+
+	ID  shift 21
+	SEMISEMI  reduce 48
+
+	var  goto 28
+	args0  goto 58
+	args1  goto 46
+
+
+state 33
+	toplevel : expr SEMISEMI .  (1)
+
+	.  reduce 1
+
+
+state 34
+	toplevel : declare SEMISEMI .  (2)
+
+	.  reduce 2
+
+
+state 35
+	arith_expr : arith_expr PLUS . factor_expr  (33)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LPAR  shift 8
+	LBRACKET  shift 10
+	.  error
+
+	factor_expr  goto 59
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 36
+	arith_expr : arith_expr MINUS . factor_expr  (34)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LPAR  shift 8
+	LBRACKET  shift 10
+	.  error
+
+	factor_expr  goto 60
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 37
+	expr : arith_expr EQ . arith_expr  (16)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LPAR  shift 8
+	LBRACKET  shift 10
+	.  error
+
+	arith_expr  goto 61
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 38
+	expr : arith_expr LT . arith_expr  (17)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LPAR  shift 8
+	LBRACKET  shift 10
+	.  error
+
+	arith_expr  goto 62
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 39
+	list_expr : arith_expr CONS . list_expr  (31)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LPAR  shift 8
+	LBRACKET  shift 10
+	.  error
+
+	arith_expr  goto 63
+	list_expr  goto 64
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 40
+	factor_expr : factor_expr TIMES . app_expr  (36)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LPAR  shift 8
+	LBRACKET  shift 10
+	.  error
+
+	app_expr  goto 65
+	atomic_expr  goto 20
+
+
+state 41
+	factor_expr : factor_expr DIV . app_expr  (37)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LPAR  shift 8
+	LBRACKET  shift 10
+	.  error
+
+	app_expr  goto 66
+	atomic_expr  goto 20
+
+
+state 42
+	app_expr : app_expr atomic_expr .  (39)
+
+	.  reduce 39
+
+
+state 43
+	let_rec_declare : var . var args0 EQ expr  (10)
+	let_rec_declare : var . var args0 EQ expr AND let_rec_declare  (11)
+
+	ID  shift 21
+	.  error
+
+	var  goto 67
+
+
+state 44
+	declare : LET REC let_rec_declare .  (5)
+	declare : LET REC let_rec_declare . declare  (7)
+	expr : LET REC let_rec_declare . IN expr  (13)
+
+	LET  shift 47
+	IN  shift 68
+	SEMISEMI  reduce 5
+
+	declare  goto 69
+
+
+state 45
+	let_declare : var args0 . EQ expr  (8)
+	let_declare : var args0 . EQ expr AND let_declare  (9)
+
+	EQ  shift 70
+	.  error
+
+
+state 46
+	args0 : args1 .  (49)
+
+	.  reduce 49
+
+
+state 47
+	declare : LET . let_declare  (4)
+	declare : LET . REC let_rec_declare  (5)
+	declare : LET . let_declare declare  (6)
+	declare : LET . REC let_rec_declare declare  (7)
+
+	ID  shift 21
+	REC  shift 71
+	.  error
+
+	var  goto 23
+	let_declare  goto 72
+
+
+state 48
+	expr : LET let_declare IN . expr  (12)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 73
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 49
+	declare : LET let_declare declare .  (6)
+
+	.  reduce 6
+
+
+state 50
+	expr : LET REC . let_rec_declare IN expr  (13)
+
+	ID  shift 21
+	.  error
+
+	var  goto 43
+	let_rec_declare  goto 74
+
+
+state 51
+	expr : LET let_declare . IN expr  (12)
+
+	IN  shift 48
+	.  error
+
+
+state 52
+	expr : IF expr THEN . expr ELSE expr  (14)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 75
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 53
+	atomic_expr : LPAR expr RPAR .  (46)
+
+	.  reduce 46
+
+
+state 54
+	atomic_expr : LPAR expr COMMA . expr RPAR  (43)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 76
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 55
+	args1 : var args0 .  (50)
+
+	.  reduce 50
+
+
+state 56
+	expr : FUN args1 ARROW . expr  (15)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 77
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 57
+	expr : MATCH expr WITH . cases  (18)
+	expr : MATCH expr WITH . BAR cases  (19)
+
+	INT  shift 78
+	BOOL  shift 79
+	ID  shift 21
+	LPAR  shift 80
+	LBRACKET  shift 81
+	BAR  shift 82
+	.  error
+
+	var  goto 83
+	cases  goto 84
+	pattern  goto 85
+	atomic_pattern  goto 86
+
+
+state 58
+	toplevel : SHARP var args0 . SEMISEMI  (3)
+
+	SEMISEMI  shift 87
+	.  error
+
+
+state 59
+	arith_expr : arith_expr PLUS factor_expr .  (33)
+	factor_expr : factor_expr . TIMES app_expr  (36)
+	factor_expr : factor_expr . DIV app_expr  (37)
+
+	TIMES  shift 40
+	DIV  shift 41
+	LET  reduce 33
+	IN  reduce 33
+	AND  reduce 33
+	PLUS  reduce 33
+	MINUS  reduce 33
+	EQ  reduce 33
+	LT  reduce 33
+	THEN  reduce 33
+	ELSE  reduce 33
+	RPAR  reduce 33
+	CONS  reduce 33
+	COMMA  reduce 33
+	WITH  reduce 33
+	BAR  reduce 33
+	SEMISEMI  reduce 33
+
+
+state 60
+	arith_expr : arith_expr MINUS factor_expr .  (34)
+	factor_expr : factor_expr . TIMES app_expr  (36)
+	factor_expr : factor_expr . DIV app_expr  (37)
+
+	TIMES  shift 40
+	DIV  shift 41
+	LET  reduce 34
+	IN  reduce 34
+	AND  reduce 34
+	PLUS  reduce 34
+	MINUS  reduce 34
+	EQ  reduce 34
+	LT  reduce 34
+	THEN  reduce 34
+	ELSE  reduce 34
+	RPAR  reduce 34
+	CONS  reduce 34
+	COMMA  reduce 34
+	WITH  reduce 34
+	BAR  reduce 34
+	SEMISEMI  reduce 34
+
+
+state 61
+	expr : arith_expr EQ arith_expr .  (16)
+	arith_expr : arith_expr . PLUS factor_expr  (33)
+	arith_expr : arith_expr . MINUS factor_expr  (34)
+
+	PLUS  shift 35
+	MINUS  shift 36
+	LET  reduce 16
+	IN  reduce 16
+	AND  reduce 16
+	THEN  reduce 16
+	ELSE  reduce 16
+	RPAR  reduce 16
+	COMMA  reduce 16
+	WITH  reduce 16
+	BAR  reduce 16
+	SEMISEMI  reduce 16
+
+
+state 62
+	expr : arith_expr LT arith_expr .  (17)
+	arith_expr : arith_expr . PLUS factor_expr  (33)
+	arith_expr : arith_expr . MINUS factor_expr  (34)
+
+	PLUS  shift 35
+	MINUS  shift 36
+	LET  reduce 17
+	IN  reduce 17
+	AND  reduce 17
+	THEN  reduce 17
+	ELSE  reduce 17
+	RPAR  reduce 17
+	COMMA  reduce 17
+	WITH  reduce 17
+	BAR  reduce 17
+	SEMISEMI  reduce 17
+
+
+state 63
+	list_expr : arith_expr . CONS list_expr  (31)
+	list_expr : arith_expr .  (32)
+	arith_expr : arith_expr . PLUS factor_expr  (33)
+	arith_expr : arith_expr . MINUS factor_expr  (34)
+
+	PLUS  shift 35
+	MINUS  shift 36
+	CONS  shift 39
+	LET  reduce 32
+	IN  reduce 32
+	AND  reduce 32
+	THEN  reduce 32
+	ELSE  reduce 32
+	RPAR  reduce 32
+	COMMA  reduce 32
+	WITH  reduce 32
+	BAR  reduce 32
+	SEMISEMI  reduce 32
+
+
+state 64
+	list_expr : arith_expr CONS list_expr .  (31)
+
+	.  reduce 31
+
+
+state 65
+	factor_expr : factor_expr TIMES app_expr .  (36)
+	app_expr : app_expr . atomic_expr  (39)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LPAR  shift 8
+	LBRACKET  shift 10
+	LET  reduce 36
+	IN  reduce 36
+	AND  reduce 36
+	PLUS  reduce 36
+	TIMES  reduce 36
+	MINUS  reduce 36
+	DIV  reduce 36
+	EQ  reduce 36
+	LT  reduce 36
+	THEN  reduce 36
+	ELSE  reduce 36
+	RPAR  reduce 36
+	CONS  reduce 36
+	COMMA  reduce 36
+	WITH  reduce 36
+	BAR  reduce 36
+	SEMISEMI  reduce 36
+
+	atomic_expr  goto 42
+
+
+state 66
+	factor_expr : factor_expr DIV app_expr .  (37)
+	app_expr : app_expr . atomic_expr  (39)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LPAR  shift 8
+	LBRACKET  shift 10
+	LET  reduce 37
+	IN  reduce 37
+	AND  reduce 37
+	PLUS  reduce 37
+	TIMES  reduce 37
+	MINUS  reduce 37
+	DIV  reduce 37
+	EQ  reduce 37
+	LT  reduce 37
+	THEN  reduce 37
+	ELSE  reduce 37
+	RPAR  reduce 37
+	CONS  reduce 37
+	COMMA  reduce 37
+	WITH  reduce 37
+	BAR  reduce 37
+	SEMISEMI  reduce 37
+
+	atomic_expr  goto 42
+
+
+state 67
+	let_rec_declare : var var . args0 EQ expr  (10)
+	let_rec_declare : var var . args0 EQ expr AND let_rec_declare  (11)
+	args0 : .  (48)
+
+	ID  shift 21
+	EQ  reduce 48
+
+	var  goto 28
+	args0  goto 88
+	args1  goto 46
+
+
+state 68
+	expr : LET REC let_rec_declare IN . expr  (13)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 89
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 69
+	declare : LET REC let_rec_declare declare .  (7)
+
+	.  reduce 7
+
+
+state 70
+	let_declare : var args0 EQ . expr  (8)
+	let_declare : var args0 EQ . expr AND let_declare  (9)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 90
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 71
+	declare : LET REC . let_rec_declare  (5)
+	declare : LET REC . let_rec_declare declare  (7)
+
+	ID  shift 21
+	.  error
+
+	var  goto 43
+	let_rec_declare  goto 91
+
+
+state 72
+	declare : LET let_declare .  (4)
+	declare : LET let_declare . declare  (6)
+
+	LET  shift 47
+	SEMISEMI  reduce 4
+
+	declare  goto 49
+
+
+state 73
+	expr : LET let_declare IN expr .  (12)
+
+	.  reduce 12
+
+
+state 74
+	expr : LET REC let_rec_declare . IN expr  (13)
+
+	IN  shift 68
+	.  error
+
+
+state 75
+	expr : IF expr THEN expr . ELSE expr  (14)
+
+	ELSE  shift 92
+	.  error
+
+
+state 76
+	atomic_expr : LPAR expr COMMA expr . RPAR  (43)
+
+	RPAR  shift 93
+	.  error
+
+
+state 77
+	expr : FUN args1 ARROW expr .  (15)
+
+	.  reduce 15
+
+
+state 78
+	atomic_pattern : INT .  (25)
+
+	.  reduce 25
+
+
+state 79
+	atomic_pattern : BOOL .  (26)
+
+	.  reduce 26
+
+
+state 80
+	atomic_pattern : LPAR . pattern COMMA pattern RPAR  (28)
+	atomic_pattern : LPAR . pattern RPAR  (30)
+
+	INT  shift 78
+	BOOL  shift 79
+	ID  shift 21
+	LPAR  shift 80
+	LBRACKET  shift 81
+	.  error
+
+	var  goto 83
+	pattern  goto 94
+	atomic_pattern  goto 86
+
+
+state 81
+	atomic_pattern : LBRACKET . RBRACKET  (29)
+
+	RBRACKET  shift 95
+	.  error
+
+
+state 82
+	expr : MATCH expr WITH BAR . cases  (19)
+
+	INT  shift 78
+	BOOL  shift 79
+	ID  shift 21
+	LPAR  shift 80
+	LBRACKET  shift 81
+	.  error
+
+	var  goto 83
+	cases  goto 96
+	pattern  goto 85
+	atomic_pattern  goto 86
+
+
+state 83
+	atomic_pattern : var .  (27)
+
+	.  reduce 27
+
+
+state 84
+	expr : MATCH expr WITH cases .  (18)
+
+	.  reduce 18
+
+
+state 85
+	cases : pattern . ARROW expr  (21)
+	cases : pattern . ARROW expr BAR cases  (22)
+
+	ARROW  shift 97
+	.  error
+
+
+state 86
+	pattern : atomic_pattern . CONS pattern  (23)
+	pattern : atomic_pattern .  (24)
+
+	CONS  shift 98
+	RPAR  reduce 24
+	ARROW  reduce 24
+	COMMA  reduce 24
+
+
+state 87
+	toplevel : SHARP var args0 SEMISEMI .  (3)
+
+	.  reduce 3
+
+
+state 88
+	let_rec_declare : var var args0 . EQ expr  (10)
+	let_rec_declare : var var args0 . EQ expr AND let_rec_declare  (11)
+
+	EQ  shift 99
+	.  error
+
+
+state 89
+	expr : LET REC let_rec_declare IN expr .  (13)
+
+	.  reduce 13
+
+
+state 90
+	let_declare : var args0 EQ expr .  (8)
+	let_declare : var args0 EQ expr . AND let_declare  (9)
+
+	AND  shift 100
+	LET  reduce 8
+	IN  reduce 8
+	SEMISEMI  reduce 8
+
+
+state 91
+	declare : LET REC let_rec_declare .  (5)
+	declare : LET REC let_rec_declare . declare  (7)
+
+	LET  shift 47
+	SEMISEMI  reduce 5
+
+	declare  goto 69
+
+
+state 92
+	expr : IF expr THEN expr ELSE . expr  (14)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 101
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 93
+	atomic_expr : LPAR expr COMMA expr RPAR .  (43)
+
+	.  reduce 43
+
+
+state 94
+	atomic_pattern : LPAR pattern . COMMA pattern RPAR  (28)
+	atomic_pattern : LPAR pattern . RPAR  (30)
+
+	RPAR  shift 102
+	COMMA  shift 103
+	.  error
+
+
+state 95
+	atomic_pattern : LBRACKET RBRACKET .  (29)
+
+	.  reduce 29
+
+
+state 96
+	expr : MATCH expr WITH BAR cases .  (19)
+
+	.  reduce 19
+
+
+state 97
+	cases : pattern ARROW . expr  (21)
+	cases : pattern ARROW . expr BAR cases  (22)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 104
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 98
+	pattern : atomic_pattern CONS . pattern  (23)
+
+	INT  shift 78
+	BOOL  shift 79
+	ID  shift 21
+	LPAR  shift 80
+	LBRACKET  shift 81
+	.  error
+
+	var  goto 83
+	pattern  goto 105
+	atomic_pattern  goto 86
+
+
+state 99
+	let_rec_declare : var var args0 EQ . expr  (10)
+	let_rec_declare : var var args0 EQ . expr AND let_rec_declare  (11)
+
+	INT  shift 3
+	BOOL  shift 4
+	ID  shift 5
+	LET  shift 25
+	IF  shift 7
+	LPAR  shift 8
+	FUN  shift 9
+	LBRACKET  shift 10
+	MATCH  shift 11
+	.  error
+
+	expr  goto 106
+	arith_expr  goto 16
+	list_expr  goto 17
+	factor_expr  goto 18
+	app_expr  goto 19
+	atomic_expr  goto 20
+
+
+state 100
+	let_declare : var args0 EQ expr AND . let_declare  (9)
+
+	ID  shift 21
+	.  error
+
+	var  goto 23
+	let_declare  goto 107
+
+
+state 101
+	expr : IF expr THEN expr ELSE expr .  (14)
+
+	.  reduce 14
+
+
+state 102
+	atomic_pattern : LPAR pattern RPAR .  (30)
+
+	.  reduce 30
+
+
+state 103
+	atomic_pattern : LPAR pattern COMMA . pattern RPAR  (28)
+
+	INT  shift 78
+	BOOL  shift 79
+	ID  shift 21
+	LPAR  shift 80
+	LBRACKET  shift 81
+	.  error
+
+	var  goto 83
+	pattern  goto 108
+	atomic_pattern  goto 86
+
+
+104: shift/reduce conflict (shift 109, reduce 21) on BAR
+state 104
+	cases : pattern ARROW expr .  (21)
+	cases : pattern ARROW expr . BAR cases  (22)
+
+	BAR  shift 109
+	LET  reduce 21
+	IN  reduce 21
+	AND  reduce 21
+	THEN  reduce 21
+	ELSE  reduce 21
+	RPAR  reduce 21
+	COMMA  reduce 21
+	WITH  reduce 21
+	SEMISEMI  reduce 21
+
+
+state 105
+	pattern : atomic_pattern CONS pattern .  (23)
+
+	.  reduce 23
+
+
+state 106
+	let_rec_declare : var var args0 EQ expr .  (10)
+	let_rec_declare : var var args0 EQ expr . AND let_rec_declare  (11)
+
+	AND  shift 110
+	LET  reduce 10
+	IN  reduce 10
+	SEMISEMI  reduce 10
+
+
+state 107
+	let_declare : var args0 EQ expr AND let_declare .  (9)
+
+	.  reduce 9
+
+
+state 108
+	atomic_pattern : LPAR pattern COMMA pattern . RPAR  (28)
+
+	RPAR  shift 111
+	.  error
+
+
+state 109
+	cases : pattern ARROW expr BAR . cases  (22)
+
+	INT  shift 78
+	BOOL  shift 79
+	ID  shift 21
+	LPAR  shift 80
+	LBRACKET  shift 81
+	.  error
+
+	var  goto 83
+	cases  goto 112
+	pattern  goto 85
+	atomic_pattern  goto 86
+
+
+state 110
+	let_rec_declare : var var args0 EQ expr AND . let_rec_declare  (11)
+
+	ID  shift 21
+	.  error
+
+	var  goto 43
+	let_rec_declare  goto 113
+
+
+state 111
+	atomic_pattern : LPAR pattern COMMA pattern RPAR .  (28)
+
+	.  reduce 28
+
+
+state 112
+	cases : pattern ARROW expr BAR cases .  (22)
+
+	.  reduce 22
+
+
+state 113
+	let_rec_declare : var var args0 EQ expr AND let_rec_declare .  (11)
+
+	.  reduce 11
+
+
+State 104 contains 1 shift/reduce conflict.
+
+
+32 terminals, 18 nonterminals
+52 grammar rules, 114 states
