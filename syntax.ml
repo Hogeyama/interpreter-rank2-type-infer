@@ -1,5 +1,19 @@
 type name = string
 
+type ('a, 'b) either = Left of 'a | Right of 'b
+type tyvar = TV of (int, string) either
+type ty =
+  | TyInt
+  | TyBool
+  | TyVar   of tyvar
+  | TyArrow of ty * ty
+  | TyPair  of ty * ty
+  | TyList  of ty
+type type_schema =
+  | TsLift   of ty
+  | TsForall of tyvar list * type_schema
+  | TsArrow  of type_schema * type_schema
+
 type pattern =
   | PInt  of int
   | PBool of bool
@@ -27,6 +41,7 @@ type expr =
   | ENil
   | ECons      of expr * expr
   | EMatch     of expr * (pattern * expr) list
+  | ELetTy     of (name * type_schema * expr) list * expr
 
 type declare =
   | Decl    of (name * expr) list

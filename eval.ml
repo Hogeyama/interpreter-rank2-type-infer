@@ -91,6 +91,10 @@ let rec eval_expr env e =
     (match v1, v2 with
      | VInt i1,  VInt i2  -> VBool (i1 = i2)
      | VBool b1, VBool b2 -> VBool (b1 = b2)
+     | VFun _, VFun _
+     | VRecFun _, VFun _
+     | VFun _, VRecFun _
+     | VRecFun _, VRecFun _ -> raise (Invalid_argument "(=): functional value")
      | _ -> raise (TypeMatchErr "(=)"))
   | ELt (e1,e2) ->
     let v1 = eval_expr env e1 in
@@ -98,6 +102,10 @@ let rec eval_expr env e =
     (match v1, v2 with
      | VInt i1,  VInt i2  -> VBool (i1 < i2)
      | VBool b1, VBool b2 -> VBool (b1 < b2)
+     | VFun _, VFun _
+     | VRecFun _, VFun _
+     | VFun _, VRecFun _
+     | VRecFun _, VRecFun _ -> raise (Invalid_argument "(<): functional value")
      | _ -> raise (TypeMatchErr "(<)"))
   | EIf (e1,e2,e3) ->
     let v1 = eval_expr env e1 in
@@ -105,11 +113,9 @@ let rec eval_expr env e =
      | VBool b ->
        if b then eval_expr env e2 else eval_expr env e3
      | _ -> raise (TypeMatchErr "if"))
-    (*
-  | ELet (x,e1,e2) ->
+  | ELetTy ([x,_,e1],e2) ->
     let v1 = eval_expr env e1
     in eval_expr (extend x v1 env) e2
-     *)
   | ELet (l, e1) ->
       let f (x,e) = (x, eval_expr env e) in
       let tmp_env = extend_list (List.map f l) env in
@@ -177,7 +183,7 @@ let eval_decl : env -> tyenv -> declare ->
         (match dup_by (fun (x,_) (y,_) -> x=y) l with
         | Some (x,_) ->
             failwith ("Variable " ^ x ^ " is bound several times in this matching")
-        | None ->
+        | None -> (*TODO infer_declで書き直し*)
             let rec f = function
               | [] -> []
               | (x,e)::l' ->
@@ -195,7 +201,7 @@ let eval_decl : env -> tyenv -> declare ->
         | Some (f,_,_) ->
             failwith ("Variable " ^ f ^ " is bound several times in this matching")
         | None ->
-            let new_tyenv = infer_decl tyenv dec in
+            let (new_tyenv, _) = infer_decl tyenv dec in
             let rec func n = function
               | [] -> []
               | (f,x,e)::l' ->

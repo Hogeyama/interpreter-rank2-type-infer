@@ -20,7 +20,7 @@ let rec read_eval_print in_channel env tyenv =
       let f (x, tyschm, v) =
         (match x with
         | "-" -> Printf.printf "- : %s = " (show_tyschm tyschm)
-        | _   -> Printf.printf "%s : %s = " x (show_tyschm tyschm));
+        | _   -> Printf.printf "val %s : %s = " x (show_tyschm tyschm));
         print_value v;
         print_newline () in
       ignore (List.map f l) in
@@ -40,4 +40,3 @@ let rec read_eval_print in_channel env tyenv =
     | e -> print_endline (Printexc.to_string e); read_eval_print stdin env tyenv
 
 let _ = read_eval_print stdin empty_env empty_tyenv
-
