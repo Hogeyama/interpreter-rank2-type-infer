@@ -6,7 +6,6 @@ The type inferrer is an implementation of Kfoury, Assaf J., and Joe B. Wells. "A
 ## Example
 
 ```ocaml
-    rlwrap ./main
     # (fun f -> f 1 + f true);;
     - : (forall a. a) -> int = <fun>
     # (fun f -> f 1 + f true) (fun x -> 5);;
