@@ -11,9 +11,5 @@ The type inferrer is an implementation of Kfoury, Assaf J., and Joe B. Wells. "A
     - : (forall a. a) -> int = <fun>
     # (fun f -> f 1 + f true) (fun x -> 5);;
     - : int = 10
-    # let g f = f 1 + f true in g (fun x->5);; (* `g` has rank-3 type *)
-    Rank2.Unification("inequation `int <= bool` has no solution")
-    # let macro g f = f 1 + f true in g (fun x->5);;
-    - : int = 10
 ```
 
